@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <title>Dushyn Frame</title>
+</head>
+
+<body>
+    <button class="gp-button raised" id="login">
+        Login to Google Photos
+    </button>
+
+    <script src="/js/jquery.slim.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            $('#login').on('click', function (e) {
+                // Make the request to the backend to log in.
+                console.log('Login click');
+                window.location = "/auth/google";
+            })
+        });
+    </script>
+</body>
+
+</html>
