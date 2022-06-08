@@ -34,6 +34,7 @@ app.use(bodyParser.urlencoded({extended: true}));
 app.use(passport.initialize());
 app.use(passport.session());
 
+app.use(express.static('static'));
 app.use('/js',
   express.static(
     fileURLToPath(
