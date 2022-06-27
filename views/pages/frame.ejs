@@ -3,24 +3,32 @@
 
 <head>
     <style>
+        html {
+            height: 100%
+        }
         body {
+            height: 100%;
             margin: 0;
             overflow: hidden;
         }
         .frame {
             display: flex;
-            flex-direction: row;
             justify-content: center;
+            align-items: center;
+            height: 100%;
+        }
+        .center-fit {
+            max-width: 100%;
+            max-height: 100vh;
+            margin: auto;
         }
     </style>
 </head>
 
 <body>
-    <div class="frame">
-        <div id="images-container"></div>
-    </div>
+    <div class="frame" id="images-container"></div>
 
-    <script src="/js/jquery.slim.min.js"></script>
+    <script src="/js/jquery.min.js"></script>
     <script src="/js/frame.js"></script>
 </body>
 
