@@ -54,9 +54,11 @@ app.get('/', (req, res) => {
 });
 
 app.get('/logout', (req, res) => {
-  req.logout();
-  req.session.destroy();
-  res.redirect('/');
+  req.logout(function (err) {
+    if (err) { return next(err); }
+    req.session.destroy();
+    res.redirect('/');
+  });
 });
 
 app.get('/auth/google', passport.authenticate('google', {
@@ -78,25 +80,26 @@ app.get(
   });
 
 app.get('/getQueue', async (req, res) => {
-  const userId = req.user.profile.id;
   const authToken = req.user.token;
-  console.log(userId);
-  console.log(authToken);
-  const data = await libraryApiSearch(authToken);
 
-  return res.status(200).send(data);
-})
-
-async function libraryApiSearch(authToken) {
-  let photos = [];
-  let nextPageToken = null;
-  let error = null;
-  const parameters = {
-    pageSize: config.searchPageSize
+  // get all albums
+  const albums = await libraryApiAlbums(authToken);
+  // get random albums
+  const randomAlbums = albums.sort(() => .5 - Math.random()).slice(0, config.randomAlbumsSize);
+  // get photos from random items
+  const mediaItems = [];
+  for (let i = 0; i < randomAlbums.length; i++) {
+    mediaItems.push(...(await libraryApiSearch(authToken, randomAlbums[i].id)).mediaItems)
   }
 
-  console.log(
-    `Submitting search with parameters: ${JSON.stringify(parameters)}`);
+  return res.status(200).send(mediaItems);
+})
+
+async function libraryApiSearch(authToken, albumId) {
+  const parameters = {
+    albumId: albumId,
+    pageSize: config.searchPageSize
+  }
 
   // Make a POST request to search the library or album
   const searchResponse =
@@ -108,10 +111,67 @@ async function libraryApiSearch(authToken) {
       },
       body: JSON.stringify(parameters)
     });
-
   const result = await searchResponse.json();
 
   return result;
+}
+
+async function libraryApiAlbums(authToken) {
+  let albums = [];
+  let error = null;
+  let parameters = new URLSearchParams();
+  parameters.append('pageSize', config.albumPageSize);
+
+  try {
+    // Loop while there is a nextpageToken property in the response until all
+    // albums have been listed.
+    do {
+      // Make a POST request to search the library or album
+      const searchResponse =
+        await fetch(config.apiEndpoint + '/v1/albums?' + parameters, {
+          method: 'get',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer ' + authToken
+          }
+        });
+
+      const result = await checkStatus(searchResponse);
+      if (result && result.albums) {
+        // Parse albums and add them to the list, skipping empty entries.
+        const items = result.albums.filter(x => !!x);
+
+        albums = albums.concat(items);
+      }
+      if (result.nextPageToken) {
+        parameters.set('pageToken', result.nextPageToken);
+      } else {
+        parameters.delete('pageToken');
+      }
+
+      // Loop until all albums have been listed and no new nextPageToken is
+      // returned.
+    } while (parameters.has('pageToken'));
+  } catch (err) {
+    // Log the error and prepare to return it.
+    error = err;
+    console.log(error);
+  }
+
+  return albums;
+}
+
+async function checkStatus(response) {
+  if (!response.ok) {
+    let message = "";
+    try {
+      message = await response.json();
+    } catch (err) { }
+    throw new StatusError(response.status, response.statusText, message);
+  }
+
+  // If the HTTP status is OK, return the body as JSON.
+  return await response.json();
 }
 
 // Start the server

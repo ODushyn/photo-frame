@@ -20,14 +20,14 @@ config.scopes = [
   'profile',
 ];
 
-// The number of photos to load for search requests.
-config.photosToLoad = 10;
-
 // The page size to use for search requests. 100 is reccommended.
-config.searchPageSize = 10;
+config.searchPageSize = 5;
 
 // The page size to use for the listing albums request. 50 is reccommended.
-config.albumPageSize = 10;
+config.albumPageSize = 50;
+
+// The page size to use for the listing albums request. 50 is reccommended.
+config.randomAlbumsSize = 5;
 
 // The API end point to use. Do not change.
 config.apiEndpoint = 'https://photoslibrary.googleapis.com';

@@ -1,11 +1,11 @@
 
-function showPreview(mediaItems) {
+function showPreview() {
     $.ajax({
         type: 'GET',
         url: '/getQueue',
         dataType: 'json',
-        success: (data) => {
-            const item = data.mediaItems[Math.floor(Math.random() * 10)];
+        success: (mediaItems) => {
+            const item = mediaItems[Math.floor(Math.random() * 10)];
             const fullUrl = `${item.baseUrl}=w${item.mediaMetadata.width}-h${
                 item.mediaMetadata.height}`;
             const linkToFullImage = $('<img />')
@@ -15,8 +15,8 @@ function showPreview(mediaItems) {
             $('#images-container').append(linkToFullImage);
 
         },
-        error: (data) => {
-            console.log('Could not load queue', data)
+        error: (mediaItems) => {
+            console.log('Could not load queue', mediaItems)
         }
     });
 }
