@@ -13,6 +13,7 @@ import time
 photo_transition_time = 30
 photo_ids_cache = []
 data_file_name = 'albums.json'
+ignored_albums = ["Israel 08.2014", "Nastya HB 2014"]
 
 
 def print_with_timestamp(*args, **kwargs):
@@ -115,9 +116,14 @@ def refresh_data_file():
         fetched_album_title = fetched_album['title']
         fetched_album_size = fetched_album.get('mediaItemsCount', 0)
 
-        existing_album = next((album for album in data['albums'] if album['id'] == fetched_album_id), None)
         processed_albums += 1
         print_with_timestamp("Processing album {0}/{1}...".format(processed_albums, total_albums))
+        if fetched_album_title in ignored_albums:
+            processed_albums += 1
+            print_with_timestamp("Skipping ignored album {0}".format(fetched_album_title))
+            continue
+
+        existing_album = next((album for album in data['albums'] if album['id'] == fetched_album_id), None)
 
         if existing_album:
             if existing_album['size'] != fetched_album_size:
@@ -239,8 +245,7 @@ def fetch_album_photos(service, album_id, album_title):
             break
 
     # Apply filters to exclude videos and other types of media
-    filtered_photos = [photo for photo in photos if
-                       photo.get('mediaMetadata', {}).get('photo', {}).get('cameraMake') is not None]
+    filtered_photos = [photo for photo in photos if photo.get('mimeType', '').startswith('image/')]
 
     print_with_timestamp(
         "Photos loading is finished. {0} photos are loaded for album {1}".format(len(filtered_photos), album_title))
