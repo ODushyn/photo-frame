@@ -24,13 +24,28 @@ class RetryOnHttpErrorTests(unittest.TestCase):
         self.assertEqual(response, {'status': 'success'})
         request_func.execute.assert_called_once()
 
-    def test_http_error_retry(self):
+    def test_http_error_503_retry(self):
         # Mock the request function
         request_func = MagicMock()
         request_func.execute.side_effect = [
             HttpError(resp=MockResponse(503, 'Service Unavailable'), content='Service Unavailable'.encode('utf-8')),
             {'status': 'success'}
         ]
+        # Call the function under test
+        response = retry_on_http_error(request_func)
+
+        # Assertions
+        self.assertEqual(response, {'status': 'success'})
+        self.assertEqual(request_func.execute.call_count, 2)
+
+    def test_http_error_404_retry(self):
+        # Mock the request_func
+        request_func = MagicMock()
+        request_func.execute.side_effect = [
+            HttpError(resp=MockResponse(404,  'Not found'), content='The provided ID does not match any media items.'.encode('utf-8')),
+            {'status': 'success'}
+        ]
+
         # Call the function under test
         response = retry_on_http_error(request_func)
 
