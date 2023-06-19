@@ -8,6 +8,7 @@ from google.auth.transport.requests import Request
 from google.oauth2.credentials import Credentials
 from selenium import webdriver
 from googleapiclient.discovery import build
+from googleapiclient.errors import HttpError
 import time
 
 photo_transition_time = 30
@@ -49,7 +50,7 @@ def get_random_photo_url_from_cache():
     service = build('photoslibrary', 'v1', credentials=creds, static_discovery=False)
     response = retry_on_http_error(service.mediaItems().get(mediaItemId=photo_id))
     photo_url = response.get('baseUrl') + '=w2048-h1024'
-    print_with_timestamp("Photo loaded")
+    print_with_timestamp("Photo loaded (url={0})".format(response['productUrl']))
     return photo_url
 
 
@@ -61,6 +62,9 @@ def retry_on_http_error(request_func):
         except HttpError as error:
             if error.resp.status == 503:
                 print_with_timestamp("Service is currently unavailable. Retrying in 30 seconds...")
+                time.sleep(30)
+            elif error.resp.status == 404:
+                print_with_timestamp("Media item not found. Retrying in 30 seconds...")
                 time.sleep(30)
             else:
                 raise error
@@ -294,4 +298,5 @@ def main():
         firefox_driver.quit()
 
 
-main()
+if __name__ == '__main__':
+    main()
