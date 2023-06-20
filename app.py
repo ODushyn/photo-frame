@@ -11,7 +11,7 @@ from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
 import time
 
-photo_transition_time = 30
+photo_transition_time = 60
 photo_ids_cache = []
 data_file_name = 'albums.json'
 ignored_albums = ["Israel 08.2014", "Nastya HB 2014"]
@@ -64,8 +64,8 @@ def retry_on_http_error(request_func):
                 print_with_timestamp("Service is currently unavailable. Retrying in 30 seconds...")
                 time.sleep(30)
             elif error.resp.status == 404:
-                print_with_timestamp("Media item not found. Retrying in 30 seconds...")
-                time.sleep(30)
+                print_with_timestamp(
+                    "Media item not found. Was it deleted? Check that this error disappear after next refresh")
             else:
                 raise error
         except Exception as e:
