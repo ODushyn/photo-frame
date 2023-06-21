@@ -14,7 +14,7 @@ import time
 photo_transition_time = 60
 photo_ids_cache = []
 data_file_name = 'albums.json'
-ignored_albums = ["Israel 08.2014", "Nastya HB 2014"]
+ignored_albums = ["Israel 08.2014", "Nastya HB 2014", "MilFaculty 2013"]
 
 
 def print_with_timestamp(*args, **kwargs):
