@@ -67,7 +67,9 @@ def retry_on_http_error(request_func):
                 print_with_timestamp(
                     "Media item not found. Was it deleted? Check that this error disappear after next refresh")
             else:
-                raise error
+                print_with_timestamp("Http error with unexpected status {0} occurred.".format(error.resp.status))
+                print_with_timestamp("Retrying in 30 seconds...")
+                time.sleep(30)
         except Exception as e:
             print_with_timestamp(f"Error occurred: {str(e)}. Retrying in 30 seconds...")
             time.sleep(30)
