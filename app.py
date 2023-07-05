@@ -9,6 +9,8 @@ from google.oauth2.credentials import Credentials
 from selenium import webdriver
 from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
+from selenium import webdriver
+from selenium.webdriver.chrome.options import Options
 import time
 
 photo_transition_time = 60
@@ -174,11 +176,14 @@ def album_exists(album, fetched_albums):
 
 
 def get_browser_driver():
-    # Initialize Selenium WebDriver
-    firefox_options = webdriver.FirefoxOptions()
-    firefox_driver = webdriver.Firefox(options=firefox_options)
-    firefox_driver.fullscreen_window()
-    return firefox_driver
+    chrome_options = Options()
+    chrome_options.add_argument("--disable-gpu")
+    chrome_options.add_argument("--no-sandbox")
+    chrome_options.add_argument("--disable-dev-shm-usage")
+    chrome_options.add_argument("--remote-debugging-port=9222")
+    chrome_options.add_argument("--start-fullscreen")
+    chrome_driver = webdriver.Chrome(options=chrome_options)
+    return chrome_driver
 
 
 def schedule_data_file_refresh():
