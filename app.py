@@ -236,6 +236,9 @@ def fetch_all_albums_with_photos(service):
         album_product_url = album['productUrl']
         album_title = album['title']
         album_photos = fetch_album_photos(service, album_id, album_title)
+        if album_title in ignored_albums:
+            print_with_timestamp("Skipping ignored album {0}".format(album_title))
+            continue
         albums_with_photos.append(
             {'id': album_id, 'title': album_title, 'url': album_product_url, 'photos': album_photos})
         total_photos += len(album_photos)
