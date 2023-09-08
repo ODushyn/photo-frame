@@ -12,3 +12,8 @@ Start photoframe: `python app.py`
  
 Run tests: `python3 -m unittest test_module.py`
 
+Start photoframe using bash. Parent process monitors if photoframe crashes and restarts it if so. 
+```
+chmod +x start.sh
+./start.sh
+```
