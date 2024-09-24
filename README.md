@@ -17,3 +17,13 @@ Start photoframe using bash. Parent process monitors if photoframe crashes and r
 chmod +x start.sh
 ./start.sh
 ```
+
+Note!
+
+If getting error
+
+```
+google.auth.exceptions.RefreshError: ('invalid_grant: Token has been expired or revoked.', {'error': 'invalid_grant', 'error_description': 'Token has been expired or revoked.'})
+```
+
+then remove `token.json` file. The new file with valid credentials will be created.
