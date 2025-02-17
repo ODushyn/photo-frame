@@ -18,7 +18,9 @@ chmod +x start.sh
 ./start.sh
 ```
 
-Note!
+Troubleshooting
+--
+
 
 If getting error
 
